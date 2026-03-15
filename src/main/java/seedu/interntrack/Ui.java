@@ -99,6 +99,39 @@ public class Ui {
     }
 
     /**
+     * Prints applications filtered by the given status.
+     *
+     * @param filteredApplications The filtered list to display.
+     * @param status The status used for filtering.
+     */
+    public static void printFilteredApplications(ArrayList<Application> filteredApplications, String status) {
+        if (filteredApplications.isEmpty()) {
+            System.out.println("No applications found with status: " + status + ".");
+            return;
+        }
+        int applicationCount = filteredApplications.size();
+        System.out.println("You have " + applicationCount
+                + ((applicationCount > 1) ? " applications" : " application")
+                + " with status " + status + ".");
+        for (int i = 0; i < applicationCount; i++) {
+            Application app = filteredApplications.get(i);
+            String roles = app.getRole();
+            String company = app.getCompany();
+            String applicationStatus = app.getStatus();
+            assert app.getCompany() != null && !app.getCompany().isEmpty() :
+                    "Existing application must have company";
+            assert app.getRole() != null && !app.getRole().isEmpty() :
+                    "Existing application must have role";
+            assert applicationStatus != null :
+                    "Existing application must have status";
+            String deadline = (app.getDeadline() != null) ? " Apply by " + app.getDeadline().toString() + "." : "";
+            String contact = (app.getContact() != null) ? " Contact with " + app.getContact() + "." : "";
+            System.out.println((i + 1) + ". " + roles + " at " + company + " is "
+                    + applicationStatus + "." + deadline + contact);
+        }
+    }
+
+    /**
      * Prints confirmation after editing an application.
      *
      * @param application The updated application.
