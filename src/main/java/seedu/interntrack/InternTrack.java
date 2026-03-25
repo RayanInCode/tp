@@ -14,6 +14,7 @@ public class InternTrack {
     private static final String FILTER_COMMAND = "filter";
     private static final String LIST_COMMAND = "list";
     private static final String DELETE_COMMAND = "delete";
+    private static final String SORT_COMMAND = "sort";
     private static final Logger logger = Logger.getLogger("InternTrack");
 
     /**
@@ -55,6 +56,8 @@ public class InternTrack {
                 handleFilterCommand(line, userApplications);
             } else if (line.startsWith(LIST_COMMAND)) {
                 handleListCommand( userApplications);
+            } else if (line.startsWith(SORT_COMMAND)) {
+                handleSortCommand(line, userApplications);
             } else {
                 logger.log(Level.WARNING, "Unknown command received: " + line);
                 Ui.printUnknownCommand();
@@ -153,5 +156,18 @@ public class InternTrack {
         ArrayList<Application> filteredApplications =
                 ApplicationList.filterApplicationsByStatus(userApplications, status);
         Ui.printFilteredApplications(filteredApplications, status);
+    }
+
+    /**
+     * Handles the sort command by giving new application lists with some criteria.
+     */
+    private static void handleSortCommand(String line, ArrayList<Application> userApplications)
+            throws InternTrackException {
+        String[] criteria = Parser.parseSortCriteria(line);
+
+        assert criteria.length > 0: "There must be some sorting criteria";
+        assert criteria.length < 4: "There are at most 3 criteria";
+        ArrayList<Application> sortedApplications = ApplicationList.sortApplicationsByCriteria(userApplications, criteria);
+        Ui.printSortedApplications(sortedApplications, criteria);
     }
 }

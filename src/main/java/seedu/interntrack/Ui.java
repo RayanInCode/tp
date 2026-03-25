@@ -126,6 +126,25 @@ public class Ui {
     }
 
     /**
+     * Prints applications filtered by the given status.
+     *
+     * @param sortedApplications The sorted list to display.
+     * @param criteria The criteria used for sorting.
+     */
+    public static void printSortedApplications(ArrayList<Application> sortedApplications, String[] criteria) {
+        if (sortedApplications.isEmpty()) {
+            System.out.println("No applications found after sorting");
+            return;
+        }
+        int applicationCount = sortedApplications.size();
+
+        for (int i = 0; i < applicationCount; i++) {
+            Application app = sortedApplications.get(i);
+            printApplication(app, i);
+        }
+    }
+
+    /**
      * Prints confirmation after editing an application.
      *
      * @param application The updated application.
