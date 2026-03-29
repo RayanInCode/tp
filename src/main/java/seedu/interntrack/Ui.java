@@ -212,16 +212,17 @@ public class Ui {
      * @param numDays The number of days used for the deadline filter.
      * @param remindDate The specific cutoff date for the reminder.
      */
-    public static void printUpcomingDeadlines(ArrayList<Application> upcomingApplications, int numDays, LocalDate remindDate) {
+    public static void printUpcomingDeadlines(ArrayList<Application> upcomingApplications,
+                                              int numDays, LocalDate remindDate) {
         if (upcomingApplications.isEmpty()) {
             System.out.println("No applications due in the next " + numDays + " days.");
             return;
         }
         int applicationCount = upcomingApplications.size();
-        System.out.println("You have " + applicationCount
-                + ((applicationCount > 1) ? " applications" : " application")
-                + " due in the next " + numDays + " days"
-                + " (up to " + remindDate.toString() + "):");
+        String applicationLabel = (applicationCount > 1) ? " applications" : " application";
+        String dateRange = " (up to " + remindDate.toString() + "):";
+        System.out.println("You have " + applicationCount + applicationLabel
+                + " due in the next " + numDays + " days" + dateRange);
         for (int i = 0; i < applicationCount; i++) {
             Application app = upcomingApplications.get(i);
             printApplication(app, i);
