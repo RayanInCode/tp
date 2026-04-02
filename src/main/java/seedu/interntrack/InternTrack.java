@@ -7,7 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Serves as the main entry point and command handler for InternTrack.
+ * Main entry point and command handler for the InternTrack application.
+ * Handles user commands, application management, undo functionality,
+ * and coordinates interactions between Parser, UI, Storage, and ApplicationList.
  */
 public class InternTrack {
     private static final String ADD_COMMAND = "add";
@@ -19,6 +21,7 @@ public class InternTrack {
     private static final String SORT_COMMAND = "sort";
     private static final String UNDO_COMMAND = "undo";
     private static final String REMIND_COMMAND = "remind";
+    private static final String SUMMARY_COMMAND = "summary";
     private static final Logger logger = Logger.getLogger("InternTrack");
 
     /**
@@ -46,9 +49,9 @@ public class InternTrack {
     /**
      * Dispatches the given command to the appropriate handler.
      *
-     * @param line The raw command string entered by the user.
+     * @param line             The raw command string entered by the user.
      * @param userApplications The current list of applications.
-     * @param undoHistory The stack storing previous application list states for undo.
+     * @param undoHistory      The stack storing previous application list states for undo.
      */
     private static void handleCommand(String line, ArrayList<Application> userApplications,
                                       Stack<ArrayList<Application>> undoHistory) {
@@ -78,6 +81,8 @@ public class InternTrack {
                 handleSortCommand(trimmedLine, userApplications);
             } else if (command.equals(REMIND_COMMAND)) {
                 handleRemindCommand(trimmedLine, userApplications);
+            } else if (command.equals(SUMMARY_COMMAND)) {
+                handleSummaryCommand(userApplications);
             } else {
                 logger.log(Level.WARNING, "Unknown command received: " + line);
                 Ui.printUnknownCommand();
@@ -94,9 +99,9 @@ public class InternTrack {
      * for undo functionality, logs the operation, displays confirmation,
      * and persists changes to local storage.
      *
-     * @param line The raw input string containing application details.
+     * @param line             The raw input string containing application details.
      * @param userApplications The list of applications to be updated.
-     * @param undoHistory The stack used to store previous states of the list.
+     * @param undoHistory      The stack used to store previous states of the list.
      * @throws InternTrackException If the input format is invalid, required fields are missing, or parsing fails.
      */
     private static void handleAddCommand(String line, ArrayList<Application> userApplications,
@@ -147,7 +152,10 @@ public class InternTrack {
     }
 
     /**
-     * Handles the list command by listing all applications.
+     * Handles the list command by displaying all applications.
+     *
+     * @param userApplications The current list of applications.
+     * @throws InternTrackException If printing fails.
      */
     private static void handleListCommand(ArrayList<Application> userApplications)
             throws InternTrackException {
@@ -156,7 +164,13 @@ public class InternTrack {
     }
 
     /**
-     * Handles the edit command by updating an application's details.
+     * Handles the edit command by updating fields of an existing application.
+     * Saves the current state for undo before editing and updates storage.
+     *
+     * @param line             The raw command string entered by the user.
+     * @param userApplications The current list of applications.
+     * @param undoHistory      The stack storing previous application list states.
+     * @throws InternTrackException If parsing fails or index is invalid.
      */
     private static void handleEditCommand(String line, ArrayList<Application> userApplications,
                                           Stack<ArrayList<Application>> undoHistory)
@@ -179,7 +193,11 @@ public class InternTrack {
     }
 
     /**
-     * Handles the filter command by listing applications that match the details.
+     * Handles the filter command by displaying applications that match the given criteria.
+     *
+     * @param line             The raw command string entered by the user.
+     * @param userApplications The current list of applications.
+     * @throws InternTrackException If filter criteria is invalid.
      */
     private static void handleFilterCommand(String line, ArrayList<Application> userApplications)
             throws InternTrackException {
@@ -189,7 +207,11 @@ public class InternTrack {
     }
 
     /**
-     * Handles the sort command by giving new application lists with some criteria.
+     * Handles the sort command by sorting applications based on specified criteria.
+     *
+     * @param line             The raw command string entered by the user.
+     * @param userApplications The current list of applications.
+     * @throws InternTrackException If sorting criteria is invalid.
      */
     private static void handleSortCommand(String line, ArrayList<Application> userApplications)
             throws InternTrackException {
@@ -205,7 +227,7 @@ public class InternTrack {
      * Handles the undo command by restoring the most recent application list state.
      *
      * @param userApplications The current list of applications.
-     * @param undoHistory The stack storing previous application list states.
+     * @param undoHistory      The stack storing previous application list states.
      * @throws InternTrackException If there is no previous state to restore.
      */
     private static void handleUndoCommand(ArrayList<Application> userApplications,
@@ -229,17 +251,28 @@ public class InternTrack {
      * Parses the number of days from the input, calculates the cutoff date, and
      * triggers the UI to print applications due on or before that date.
      *
-     * @param line The raw command string containing the number of days.
+     * @param line             The raw command string containing the number of days.
      * @param userApplications The current list of applications to filter.
      * @throws InternTrackException If the input format is invalid.
      */
-    private static void handleRemindCommand
-    (String line, ArrayList<Application> userApplications) throws InternTrackException {
+    private static void handleRemindCommand(String line, ArrayList<Application> userApplications)
+            throws InternTrackException {
         int numDays = Parser.parseRemindDays(line);
         LocalDate remindDate = LocalDate.now().plusDays(numDays);
         ArrayList<Application> filteredApplications =
                 ApplicationList.filterApplicationsOnOrBefore(userApplications, remindDate);
         Ui.printUpcomingDeadlines(filteredApplications, numDays, remindDate);
+    }
+
+    /**
+     * Handles the summary command by generating and displaying a report of applications.
+     * ADDED METHOD.
+     *
+     * @param userApplications The current list of applications to summarize.
+     */
+    private static void handleSummaryCommand(ArrayList<Application> userApplications) {
+        logger.info("Processing summary command");
+        SummaryCommand.execute(userApplications);
     }
 
     /**
@@ -260,11 +293,10 @@ public class InternTrack {
      * Saves the current application list state for undo.
      *
      * @param userApplications The current application list.
-     * @param undoHistory The stack storing previous application list states.
+     * @param undoHistory      The stack storing previous application list states.
      */
     private static void saveStateForUndo(ArrayList<Application> userApplications,
                                          Stack<ArrayList<Application>> undoHistory) {
         undoHistory.push(copyApplicationList(userApplications));
     }
-
 }
