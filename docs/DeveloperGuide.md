@@ -911,13 +911,19 @@ interface.
 
 ### Launch and shutdown
 
-{Instructions for launching and shutting down the application will be added here.}
+**Launching the Application:**
 
----
+1. Open a terminal/command prompt in the directory containing `InternTrack.jar`
+2. Run: `java -jar InternTrack.jar`
+3. The application will display a welcome message and load any previously saved data from `./data/applications.txt`
+4. The terminal will be ready to accept commands
 
-### Deleting an application
+**Shutting Down the Application:**
 
-{Instructions for deleting an application will be added here.}
+1. Type `bye` at the command prompt
+2. Press Enter
+3. The application will save all data to `./data/applications.txt` and display a goodbye message
+4. The application will terminate and return to the command prompt
 
 ---
 
