@@ -15,7 +15,7 @@ public class SummaryCommand {
     /**
      * Generates and displays a summary including total counts,
      * status breakdowns, and upcoming deadlines.
-     @param userApplications The current list of applications.
+     * @param userApplications The current list of applications.
      */
     public static void execute(ArrayList<Application> userApplications) {
         if (userApplications.isEmpty()) {
@@ -45,14 +45,11 @@ public class SummaryCommand {
         Map<String, Integer> statusCounts = new HashMap<>();
 
         for (Application app : userApplications) {
-            // Assumes your Application class has a getStatus() method
             String status = app.getStatus();
 
-            // If status is null or empty, categorize it as "Unknown"
             if (status == null || status.trim().isEmpty()) {
                 status = "Unknown";
             }
-
             statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
         }
 
@@ -73,7 +70,6 @@ public class SummaryCommand {
         boolean foundDeadlines = false;
 
         for (Application app : userApplications) {
-            // Assumes your Application class has a getDeadline() method returning a LocalDate
             LocalDate deadline = app.getDeadline();
 
             if (deadline != null && !deadline.isBefore(today) && !deadline.isAfter(cutoffDate)) {
